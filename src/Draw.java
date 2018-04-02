@@ -167,6 +167,11 @@ public class Draw extends Applet implements KeyListener, Runnable
 		{	
 			if (gamePaused)
 			{
+				try
+				{
+					Thread.sleep( tetrisGame.getTimeUntilNextUpdate() );
+				} catch (InterruptedException e) { }
+				
 				continue;
 			}
 			
