@@ -47,22 +47,6 @@ public class Tetris
 		return false;
 	}
 	
-//	public boolean isOkToRotate( int r, int c, Vector2D center)
-//	{
-//		//rotating 90 degrees
-//		int oldR = (int) (r - center.getY());
-//		int oldC = (int) (c - center.getX());
-//		
-//		int newR = -oldC;
-//		int newC = oldR;
-//		
-//		newR += center.getY();
-//		newC += center.getX();
-//	
-//		//test to make sure that the new position is not out of bounds or collides with another block
-//		return isOkToMove( newR - 1, newC - 1 ) && isOkToMove( newR + 1, newC + 1 );
-//	}
-	
 	public void updateBlocks()
 	{
 		if (!isInit)

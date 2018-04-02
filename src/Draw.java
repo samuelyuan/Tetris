@@ -313,19 +313,17 @@ public class Draw extends Applet implements KeyListener, Runnable
 			for (int c = 0; c < board.getNumCols(); c++)
 			{
 				//draw tiles
-				//offscr.setColor( getColorOfBlock( r, c ) );
-				//offscr.fillRect( c * TILE_WIDTH + LEFT_BOUND_X, r * TILE_HEIGHT, 
-				//		TILE_WIDTH, TILE_HEIGHT );
-		
-				offscr.drawImage(getBlockImage(getColorOfBlock(r, c)), c * TILE_WIDTH + LEFT_BOUND_X, r * TILE_HEIGHT, 
+				int x = c * TILE_WIDTH + LEFT_BOUND_X;
+				int y = r * TILE_HEIGHT;
+				offscr.drawImage(getBlockImage(getColorOfBlock(r, c)), 
+							x, y, 
 							TILE_WIDTH, TILE_HEIGHT, Color.WHITE, this);
 				
 				//draw outline of tiles
 				if (board.getTile(r, c) != 0)
 				{
-					offscr.setColor( Color.BLACK);
-					offscr.drawRect( c * TILE_WIDTH + LEFT_BOUND_X, r * TILE_HEIGHT, 
-						TILE_WIDTH, TILE_HEIGHT );
+					offscr.setColor(Color.BLACK);
+					offscr.drawRect(x, y, TILE_WIDTH, TILE_HEIGHT);
 				}
 			}
 		}
@@ -338,12 +336,10 @@ public class Draw extends Applet implements KeyListener, Runnable
 			int c = (int) tile.getX();
 			int r = (int) tile.getY();
 			
-			//offscr.setColor(tetrisGame.getNextBlock().getColor());
-			//offscr.fillRect( (c+19) * TILE_WIDTH , r * TILE_HEIGHT + 140, TILE_WIDTH, TILE_HEIGHT );
-			//offscr.setColor(Color.BLACK);
-			//offscr.drawRect( (c+19) * TILE_WIDTH , r * TILE_HEIGHT + 140, TILE_WIDTH, TILE_HEIGHT );
-			
-			offscr.drawImage(getBlockImage(tetrisGame.getNextBlock().getColor()), (c+13) * TILE_WIDTH , r * TILE_HEIGHT + 140, 
+			int x = (c+13) * TILE_WIDTH;
+			int y = r * TILE_HEIGHT + 140;
+			offscr.drawImage(getBlockImage(tetrisGame.getNextBlock().getColor()), 
+					x, y, 
 					TILE_WIDTH, TILE_HEIGHT , Color.WHITE, this);
 		}
 		
@@ -358,20 +354,14 @@ public class Draw extends Applet implements KeyListener, Runnable
 		Block newBlock = tetrisGame.getNewBlock();
 		if (newBlock == null)
 			return;
+		
 		for ( Vector2D tile : newBlock.getTileArray() )
 		{
-			//draw block tile
-			//offscr.setColor( newBlock.getColor() );
-			//offscr.fillRect( (int)tile.getX() * TILE_WIDTH + LEFT_BOUND_X, (int)tile.getY() * TILE_HEIGHT, 
-			//		TILE_WIDTH, TILE_HEIGHT );
-			
-			//draw outline
-			//offscr.setColor( Color.BLACK );
-			//offscr.drawRect( (int)tile.getX() * TILE_WIDTH + LEFT_BOUND_X, (int)tile.getY() * TILE_HEIGHT, 
-			//		TILE_WIDTH, TILE_HEIGHT );
-			
-			offscr.drawImage(getBlockImage(newBlock.getColor()), (int)tile.getX() * TILE_WIDTH + LEFT_BOUND_X, (int)tile.getY() * TILE_HEIGHT,
-					TILE_WIDTH, TILE_HEIGHT , Color.WHITE, this);
+			int x = (int)tile.getX() * TILE_WIDTH + LEFT_BOUND_X;
+			int y = (int)tile.getY() * TILE_HEIGHT;
+			offscr.drawImage(getBlockImage(newBlock.getColor()), 
+					x, y,
+					TILE_WIDTH, TILE_HEIGHT, Color.WHITE, this);
 		}
 	}
 }
