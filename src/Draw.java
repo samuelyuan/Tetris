@@ -96,10 +96,12 @@ public class Draw extends Applet implements KeyListener, Runnable
 		if (tetrisGame.getIsGameOver() == false)
 			drawFallingBlock();	
 	
+		int scoreX = RIGHT_BOUND_X + 10;
+		int scoreY = SCREEN_HEIGHT/2 + 120;
 		offscr.setColor(Color.WHITE);
-		offscr.drawString("Score: " 		+ tetrisGame.getScore(), 				RIGHT_BOUND_X + 10, SCREEN_HEIGHT/2 + 120);
-		offscr.drawString("Level: " 		+ tetrisGame.getNumLevels(), 			RIGHT_BOUND_X + 10, SCREEN_HEIGHT/2 + 140);
-		offscr.drawString("Lines cleared: " + tetrisGame.getLinesCleared(), 		RIGHT_BOUND_X + 10, SCREEN_HEIGHT/2 + 160);
+		offscr.drawString("Score: " 		+ tetrisGame.getScore(), 		scoreX, scoreY);
+		offscr.drawString("Level: " 		+ tetrisGame.getNumLevels(), 	scoreX, scoreY + 20);
+		offscr.drawString("Lines cleared: " + tetrisGame.getLinesCleared(), scoreX, scoreY + 40);
 		
 		if (gameBegun == false)
 		{
@@ -191,37 +193,38 @@ public class Draw extends Applet implements KeyListener, Runnable
 			return;
 
 		Block newBlock = tetrisGame.getNewBlock();
-		
 		if (newBlock == null)
 			return;
 		
 		newBlock.rotateTiles( newBlock.getTile(1) );
+		
+		// check if the block is out of bounds
 		boolean outOfBounds = true;
-		boolean shiftLeft = false;
+		int shiftDir = 0;
 		while (outOfBounds == true)
 		{
 			outOfBounds = false;
 			for (int i = 0; i < 4; i++)
 			{
+				// the tile is past the left side of the screen
 				if (newBlock.getTile(i).getX() < 0)
 				{
-					outOfBounds = true; shiftLeft = false;
+					// shift right
+					outOfBounds = true; shiftDir = 1;
 					break;
 				}
-
-				if (newBlock.getTile(i).getX() >= tetrisGame.getBoard().getNumCols())
+				// the tile is past the right side of the screen
+				else if (newBlock.getTile(i).getX() >= tetrisGame.getBoard().getNumCols())
 				{
-					outOfBounds = true; shiftLeft = true;
+					// shift left
+					outOfBounds = true; shiftDir = -1;
 					break;
 				}
 			}
 
 			if (outOfBounds == true)
 			{
-				if (shiftLeft == true)
-					newBlock.shiftTiles(0, -1);
-				else
-					newBlock.shiftTiles(0, 1);
+				newBlock.shiftTiles(0, shiftDir);
 			}
 		}
 	}
@@ -313,11 +316,10 @@ public class Draw extends Applet implements KeyListener, Runnable
 			for (int c = 0; c < board.getNumCols(); c++)
 			{
 				//draw tiles
+				Image tileImg = getBlockImage(getColorOfBlock(r, c));
 				int x = c * TILE_WIDTH + LEFT_BOUND_X;
 				int y = r * TILE_HEIGHT;
-				offscr.drawImage(getBlockImage(getColorOfBlock(r, c)), 
-							x, y, 
-							TILE_WIDTH, TILE_HEIGHT, Color.WHITE, this);
+				offscr.drawImage(tileImg, x, y, TILE_WIDTH, TILE_HEIGHT, Color.WHITE, this);
 				
 				//draw outline of tiles
 				if (board.getTile(r, c) != 0)
@@ -336,11 +338,10 @@ public class Draw extends Applet implements KeyListener, Runnable
 			int c = (int) tile.getX();
 			int r = (int) tile.getY();
 			
+			Image tileImg = getBlockImage(tetrisGame.getNextBlock().getColor());
 			int x = (c+13) * TILE_WIDTH;
 			int y = r * TILE_HEIGHT + 140;
-			offscr.drawImage(getBlockImage(tetrisGame.getNextBlock().getColor()), 
-					x, y, 
-					TILE_WIDTH, TILE_HEIGHT , Color.WHITE, this);
+			offscr.drawImage(tileImg, x, y, TILE_WIDTH, TILE_HEIGHT , Color.WHITE, this);
 		}
 		
 		//board border
@@ -357,11 +358,10 @@ public class Draw extends Applet implements KeyListener, Runnable
 		
 		for ( Vector2D tile : newBlock.getTileArray() )
 		{
+			Image tileImg = getBlockImage(newBlock.getColor());
 			int x = (int)tile.getX() * TILE_WIDTH + LEFT_BOUND_X;
 			int y = (int)tile.getY() * TILE_HEIGHT;
-			offscr.drawImage(getBlockImage(newBlock.getColor()), 
-					x, y,
-					TILE_WIDTH, TILE_HEIGHT, Color.WHITE, this);
+			offscr.drawImage(tileImg, x, y, TILE_WIDTH, TILE_HEIGHT, Color.WHITE, this);
 		}
 	}
 }
