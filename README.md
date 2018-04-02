@@ -17,6 +17,7 @@ Layout
 ---
     .
     ├── img                     # Game data
+    ├── screenshots             
     ├── src                     # Source files
     ├── LICENSE
     └── README.md
