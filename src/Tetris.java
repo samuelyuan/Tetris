@@ -31,20 +31,14 @@ public class Tetris
 	
 	public Tetris ( int numRows, int numCols )
 	{
-		board = new Map ( numRows, numCols );
+		board = new Map (numRows, numCols);
 		int randNum = (int)(Math.random() * Tetris.NUM_BLOCKS) + 1;
 		nextBlock = new Block( randNum ) ;
 	}
 	
 	public boolean isOkToMove( int r, int c )
 	{
-		if ( board.isValid( r, c ) ) 
-		{
-			if ( board.getTile( r, c ) == 0 )
-				return true;
-		}
-		
-		return false;
+		return (board.isValid(r, c) && (board.getTile(r, c) == 0));
 	}
 	
 	public void updateBlocks()
@@ -62,12 +56,12 @@ public class Tetris
 			return;
 		}
 		
-		for ( Vector2D tile : newBlock.getTileArray() )
+		for (Vector2D tile : newBlock.getTileArray())
 		{	
 			int c = (int)tile.getX();
 			int r = (int)tile.getY();
 			
-			isMoving = isOkToMove( r + 1, c );
+			isMoving = isOkToMove(r + 1, c);
 			if (!isMoving) 
 				break;
 		}
@@ -76,15 +70,9 @@ public class Tetris
 			newBlock.shiftTiles(1, 0); //move down
 		else
 		{
-			for ( Vector2D tile : newBlock.getTileArray() )
+			if (placeNewBlock(newBlock) == false)
 			{
-				int newC = (int)tile.getX();
-				int newR = (int)tile.getY();
-				board.setTile( newR, newC, newBlock.getTypeOfBlock() );
-				
-				//blocks piled up
-				if (newR <= 1) 
-					isGameOver = true;	
+				isGameOver = true;	
 			}
 			
 			//set init to false, so new block can be made
@@ -95,52 +83,47 @@ public class Tetris
 		
 	}
 	
-	public boolean isLineFilled( int rowNum )
+	public boolean placeNewBlock(Block newBlock)
 	{
-		for (int c = 0; c < board.getNumCols(); c++)
+		for (Vector2D tile : newBlock.getTileArray())
 		{
-			//line isn't filled, since there's an empty space
-			if ( board.getTile(rowNum, c) == 0 )
+			int newC = (int)tile.getX();
+			int newR = (int)tile.getY();
+			board.setTile(newR, newC, newBlock.getTypeOfBlock());
+			
+			// existing blocks piled up 
+			// new block can't be placed
+			if (newR <= 1) 
+			{
 				return false;
+			}
 		}
 		
+		// new block was placed successfully
 		return true;
 	}
-	
+		
 	public void clearLine()
 	{
-		boolean isLineClearable = true;
-
-		//don't bother checking if the block is still moving
+		// don't bother checking if the block is still moving
 		if (isMoving)
 			return;
 		
-		//check from bottom to top
+		// check from bottom to top
 		for (int r = board.getNumRows() - 1; r >= 0; r--)
 		{
 			//check each tile in a row
-			isLineClearable = isLineFilled( r );
-			
-			if (isLineClearable)
+			if (board.isLineFilled(r))
 			{
-				board.clearRow( r );
-				
-				//carry everything else down to the ground
-				for (int startingY = r - 1; startingY >= 0; startingY--)
-				{
-					for (int x = 0; x < board.getNumCols(); x++)
-						board.setTile( startingY + 1, x, board.getTile( startingY, x ) );
-				}
-				
-				//the row of blocks above falls, so check that row again to determine whether
-				//it needs to be cleared again
+				board.clearRow(r);
+
+				// the row of blocks above falls
+				// check this row again to determine whether it needs to be cleared again
+				board.shiftRowDown(r);
 				r++;
 				
 				updateGameScore();
 			}
-			
-			//reset vars
-			isLineClearable = true;
 		}
 	}
 	
@@ -152,6 +135,7 @@ public class Tetris
 		
 		if (linesCleared % 10 == 0)
 		{
+			// increase game speed
 			if (timeUntilNextUpdate > 100) 
 				timeUntilNextUpdate -= 25;
 			else
