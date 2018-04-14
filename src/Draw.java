@@ -197,66 +197,15 @@ public class Draw extends Applet implements KeyListener, Runnable
 		if (e.getKeyCode() != keyCode)
 			return;
 
-		Block newBlock = tetrisGame.getNewBlock();
-		if (newBlock == null)
-			return;
-		
-		newBlock.rotateTiles( newBlock.getTile(1) );
-		
-		// check if the block is out of bounds
-		boolean outOfBounds = true;
-		int shiftDir = 0;
-		while (outOfBounds == true)
-		{
-			outOfBounds = false;
-			for (int i = 0; i < 4; i++)
-			{
-				// the tile is past the left side of the screen
-				if (newBlock.getTile(i).getX() < 0)
-				{
-					// shift right
-					outOfBounds = true; shiftDir = 1;
-					break;
-				}
-				// the tile is past the right side of the screen
-				else if (newBlock.getTile(i).getX() >= tetrisGame.getBoard().getNumCols())
-				{
-					// shift left
-					outOfBounds = true; shiftDir = -1;
-					break;
-				}
-			}
-
-			if (outOfBounds == true)
-			{
-				newBlock.shiftTiles(0, shiftDir);
-			}
-		}
+		tetrisGame.rotateBlock();
 	}
 	
 	public void handleKeyMove(KeyEvent e, int keyCode, int shiftR, int shiftC)
 	{
-		boolean okToMove = true;
-		Block newBlock = tetrisGame.getNewBlock();
-		
-		//test each tile in the block for collisions or out of bounds
-		if (newBlock == null)
+		if (e.getKeyCode() != keyCode)
 			return;
 		
-		for (Vector2D tile : newBlock.getTileArray())
-		{
-			int c = (int) tile.getX();
-			int r = (int) tile.getY();
-		
-			if (e.getKeyCode() == keyCode)
-				okToMove = tetrisGame.isOkToMove( r + shiftR, c + shiftC );
-
-			if (!okToMove)
-				return;
-		}
-
-		if (e.getKeyCode() == keyCode)
-			newBlock.shiftTiles( shiftR, shiftC );
+		tetrisGame.moveBlock(shiftR, shiftC);
 	}
 
 	public void keyPressed(KeyEvent e) 
@@ -284,13 +233,13 @@ public class Draw extends Applet implements KeyListener, Runnable
 	{
 		Map board = tetrisGame.getBoard();
 		
-		if ( board.isValid( r, c ) )
+		if (board.isValid(r, c))
 		{
 			if ( board.getTile(r, c) == 0 )
 				return Color.GRAY;
 			else
 			{
-				Block tempBlock = new Block( board.getTile( r, c ) );
+				Block tempBlock = new Block(board.getTile(r, c));
 				return tempBlock.getColor();
 			}
 		}
@@ -357,13 +306,13 @@ public class Draw extends Applet implements KeyListener, Runnable
 	
 	public void drawFallingBlock()
 	{
-		Block newBlock = tetrisGame.getNewBlock();
-		if (newBlock == null)
+		Block currentBlock = tetrisGame.getCurrentBlock();
+		if (currentBlock == null)
 			return;
 		
-		for ( Vector2D tile : newBlock.getTileArray() )
+		for (Vector2D tile : currentBlock.getTileArray())
 		{
-			Image tileImg = getBlockImage(newBlock.getColor());
+			Image tileImg = getBlockImage(currentBlock.getColor());
 			int x = (int)tile.getX() * TILE_WIDTH + LEFT_BOUND_X;
 			int y = (int)tile.getY() * TILE_HEIGHT;
 			offscr.drawImage(tileImg, x, y, TILE_WIDTH, TILE_HEIGHT, Color.WHITE, this);
