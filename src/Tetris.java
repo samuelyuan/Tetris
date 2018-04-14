@@ -1,7 +1,7 @@
 public class Tetris 
 {
 	private Map board;
-	private Block newBlock, nextBlock;
+	private Block currentBlock, nextBlock;
 	public static final int NUM_BLOCKS = 7;
 	private boolean isInit = false;
 	private boolean isMoving  = true;
@@ -14,14 +14,11 @@ public class Tetris
 	private int timeUntilNextUpdate = 400;
 	
 	public Map getBoard() { return board; }
-	public Block getNewBlock() { return newBlock; }
-	public void setNewBlock(Block newBlock) { this.newBlock = newBlock; }
+	public Block getCurrentBlock() { return currentBlock; }
 	public Block getNextBlock() { return nextBlock; }
 	
 	public boolean getIsInit() { return isInit; }
-	public void setIsInit(boolean isInit) { this.isInit = isInit; }
 	public boolean getIsMoving() { return isMoving; }
-	public void setIsMoving(boolean isMoving) { this.isMoving = isMoving; } 
 	public boolean getIsGameOver() { return isGameOver; }
 	
 	public int getScore() { return score; }
@@ -29,25 +26,102 @@ public class Tetris
 	public int getNumLevels() { return numLevels; }
 	public int getTimeUntilNextUpdate() { return timeUntilNextUpdate; } 
 	
-	public Tetris ( int numRows, int numCols )
+	public Tetris (int numRows, int numCols)
 	{
 		board = new Map (numRows, numCols);
-		int randNum = (int)(Math.random() * Tetris.NUM_BLOCKS) + 1;
-		nextBlock = new Block( randNum ) ;
+		nextBlock = createNewBlock();
 	}
 	
-	public boolean isOkToMove( int r, int c )
+	public Block createNewBlock()
+	{
+		int randNum = (int)(Math.random() * Tetris.NUM_BLOCKS) + 1;
+		return new Block(randNum);
+	}
+	
+	public boolean isOkToMove(int r, int c)
 	{
 		return (board.isValid(r, c) && (board.getTile(r, c) == 0));
+	}
+	
+	public void moveBlock(int shiftR, int shiftC)
+	{
+		if (currentBlock == null)
+			return;
+		
+		//test each tile in the block for collisions or out of bounds
+		for (Vector2D tile : currentBlock.getTileArray())
+		{
+			int c = (int) tile.getX();
+			int r = (int) tile.getY();
+
+			if (!isOkToMove(r + shiftR, c + shiftC))
+				return;
+		}
+
+		currentBlock.shiftTiles(shiftR, shiftC);
+	}
+	
+	public void rotateBlock()
+	{
+		if (currentBlock == null)
+			return;
+		
+		// rotate around center
+		currentBlock.rotateTiles(currentBlock.getTile(1));
+		
+		// check if the block is out of bounds
+		boolean outOfBounds = true;
+		int shiftDir = 0;
+		while (outOfBounds == true)
+		{
+			// check if any one of the tiles is out of bounds
+			outOfBounds = false;
+			for (int i = 0; i < 4; i++)
+			{
+				// the tile is past the left side of the screen
+				if (currentBlock.getTile(i).getX() < 0)
+				{
+					// shift right
+					outOfBounds = true; shiftDir = 1;
+					break;
+				}
+				// the tile is past the right side of the screen
+				else if (currentBlock.getTile(i).getX() >= board.getNumCols())
+				{
+					// shift left
+					outOfBounds = true; shiftDir = -1;
+					break;
+				}
+			}
+
+			// shift the block back to the board
+			if (outOfBounds == true)
+			{
+				currentBlock.shiftTiles(0, shiftDir);
+			}
+		}
+	}
+	
+	public boolean canMoveDown()
+	{
+		// check if the block can still move down
+		for (Vector2D tile : currentBlock.getTileArray())
+		{	
+			int c = (int)tile.getX();
+			int r = (int)tile.getY();
+
+			if (!isOkToMove(r + 1, c))
+				return false;
+		}
+		return true;
 	}
 	
 	public void updateBlocks()
 	{
 		if (!isInit)
 		{
-			newBlock = nextBlock;
-			int randNum = (int)(Math.random() * Tetris.NUM_BLOCKS) + 1;
-			nextBlock = new Block( randNum ) ;
+			currentBlock = nextBlock;
+			nextBlock = createNewBlock();
 			
 			isInit = true;
 			isMoving = true;
@@ -56,21 +130,14 @@ public class Tetris
 			return;
 		}
 		
-		for (Vector2D tile : newBlock.getTileArray())
-		{	
-			int c = (int)tile.getX();
-			int r = (int)tile.getY();
-			
-			isMoving = isOkToMove(r + 1, c);
-			if (!isMoving) 
-				break;
-		}
-		
+		isMoving = canMoveDown();
 		if (isMoving) 
-			newBlock.shiftTiles(1, 0); //move down
+		{
+			currentBlock.shiftTiles(1, 0); //move down
+		}
 		else
 		{
-			if (placeNewBlock(newBlock) == false)
+			if (placeNewBlock(currentBlock) == false)
 			{
 				isGameOver = true;	
 			}
