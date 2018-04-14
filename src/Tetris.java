@@ -102,6 +102,15 @@ public class Tetris
 		}
 	}
 	
+	public void mainLoop()
+	{
+		if (!isGameOver)
+		{
+			updateBlocks();
+			clearLine();
+		}
+	}
+	
 	public boolean canMoveDown()
 	{
 		// check if the block can still move down
