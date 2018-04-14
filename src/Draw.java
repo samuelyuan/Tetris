@@ -92,27 +92,15 @@ public class Draw extends Applet implements KeyListener, Runnable
 		offscr.setFont(font);
 		
 		drawBoard();
+		drawFallingBlock();	
 		
-		if (tetrisGame.getIsGameOver() == false)
-			drawFallingBlock();	
-	
-		int scoreX = RIGHT_BOUND_X + 10;
-		int scoreY = SCREEN_HEIGHT/2 + 120;
-		offscr.setColor(Color.WHITE);
-		offscr.drawString("Score: " 		+ tetrisGame.getScore(), 		scoreX, scoreY);
-		offscr.drawString("Level: " 		+ tetrisGame.getNumLevels(), 	scoreX, scoreY + 20);
-		offscr.drawString("Lines cleared: " + tetrisGame.getLinesCleared(), scoreX, scoreY + 40);
+		// draw extra information on the right panel
+		drawNextBlock();
+		drawScore();
 		
 		if (gameBegun == false)
 		{
-			font = new Font("serif", Font.PLAIN, 40);
-			offscr.setFont(font);
-			
-			offscr.setColor(Color.WHITE);
-			if (timeUntilStart > 0)
-				offscr.drawString("" + timeUntilStart/1000, SCREEN_WIDTH/2, SCREEN_HEIGHT/2);
-			else
-				offscr.drawString("START!", SCREEN_WIDTH/2 - 50, SCREEN_HEIGHT/2);
+			drawTimerText();
 		}
 		
 		if (tetrisGame.getIsGameOver() == true)
@@ -134,14 +122,14 @@ public class Draw extends Applet implements KeyListener, Runnable
 		}
 		
 		//send to front buffer
-		g.drawImage( offscreenImage, 0, 0, this );
+		g.drawImage(offscreenImage, 0, 0, this);
 	}
 	
 	public void clearScreen( Color colorToClear )
 	{
 		//clear back buffer to black
-		offscr.setColor( colorToClear );
-		offscr.fillRect( 0, 0, width, height );
+		offscr.setColor(colorToClear);
+		offscr.fillRect(0, 0, width, height);
 	}
 	
 	public void update(Graphics g)
@@ -161,15 +149,16 @@ public class Draw extends Applet implements KeyListener, Runnable
 				timeUntilStart -= 1000;
 			} catch (InterruptedException e) { }
 		}
-		gameBegun = true;
 		
+		gameBegun = true;
+				
 		while (true)
 		{	
 			if (gamePaused)
 			{
 				try
 				{
-					Thread.sleep( tetrisGame.getTimeUntilNextUpdate() );
+					Thread.sleep(tetrisGame.getTimeUntilNextUpdate());
 				} catch (InterruptedException e) { }
 				
 				continue;
@@ -178,16 +167,12 @@ public class Draw extends Applet implements KeyListener, Runnable
 			//update screen
 			repaint();
 			
-			if (!tetrisGame.getIsGameOver())
-			{
-				tetrisGame.updateBlocks();
-				tetrisGame.clearLine();
-			}
+			tetrisGame.mainLoop();
 			
 			//screen refresh
 			try
 			{
-				Thread.sleep( tetrisGame.getTimeUntilNextUpdate() );
+				Thread.sleep(tetrisGame.getTimeUntilNextUpdate());
 			} catch (InterruptedException e) { }
 		}
 	}
@@ -220,7 +205,7 @@ public class Draw extends Applet implements KeyListener, Runnable
 			handleKeyMove(e, KEY_MOVE_DOWN, 1, 0);
 			handleKeyRotate(e, KEY_ROTATE);
 		}
-		if (e.getKeyCode() == e.VK_P && gameBegun == true)
+		if (e.getKeyCode() == KeyEvent.VK_P && gameBegun == true)
 			gamePaused = !gamePaused;
 		
 		repaint();
@@ -284,20 +269,6 @@ public class Draw extends Applet implements KeyListener, Runnable
 			}
 		}
 		
-		//display Next Block data
-		offscr.setColor( Color.WHITE );
-		offscr.drawString( "Next Block: ", RIGHT_BOUND_X + 10, 120 );
-		for (Vector2D tile : tetrisGame.getNextBlock().getTileArray())
-		{
-			int c = (int) tile.getX();
-			int r = (int) tile.getY();
-			
-			Image tileImg = getBlockImage(tetrisGame.getNextBlock().getColor());
-			int x = (c+13) * TILE_WIDTH;
-			int y = r * TILE_HEIGHT + 140;
-			offscr.drawImage(tileImg, x, y, TILE_WIDTH, TILE_HEIGHT , Color.WHITE, this);
-		}
-		
 		//board border
 		offscr.setColor(Color.WHITE);
 		offscr.drawLine(LEFT_BOUND_X, 0, LEFT_BOUND_X, SCREEN_HEIGHT);
@@ -317,5 +288,45 @@ public class Draw extends Applet implements KeyListener, Runnable
 			int y = (int)tile.getY() * TILE_HEIGHT;
 			offscr.drawImage(tileImg, x, y, TILE_WIDTH, TILE_HEIGHT, Color.WHITE, this);
 		}
+	}
+	
+	public void drawNextBlock()
+	{
+		// display Next Block data
+		offscr.setColor( Color.WHITE );
+		offscr.drawString( "Next Block: ", RIGHT_BOUND_X + 10, 120 );
+		for (Vector2D tile : tetrisGame.getNextBlock().getTileArray())
+		{
+			int c = (int) tile.getX();
+			int r = (int) tile.getY();
+			
+			Image tileImg = getBlockImage(tetrisGame.getNextBlock().getColor());
+			int x = (c+13) * TILE_WIDTH;
+			int y = r * TILE_HEIGHT + 140;
+			offscr.drawImage(tileImg, x, y, TILE_WIDTH, TILE_HEIGHT , Color.WHITE, this);
+		}
+	}
+	
+	public void drawScore()
+	{
+		// display score data
+		int scoreX = RIGHT_BOUND_X + 10;
+		int scoreY = SCREEN_HEIGHT/2 + 120;
+		offscr.setColor(Color.WHITE);
+		offscr.drawString("Score: " 		+ tetrisGame.getScore(), 		scoreX, scoreY);
+		offscr.drawString("Level: " 		+ tetrisGame.getNumLevels(), 	scoreX, scoreY + 20);
+		offscr.drawString("Lines cleared: " + tetrisGame.getLinesCleared(), scoreX, scoreY + 40);
+	}
+	
+	public void drawTimerText()
+	{
+		Font font = new Font("serif", Font.PLAIN, 40);
+		offscr.setFont(font);
+		
+		offscr.setColor(Color.WHITE);
+		if (timeUntilStart > 0)
+			offscr.drawString("" + timeUntilStart/1000, SCREEN_WIDTH/2, SCREEN_HEIGHT/2);
+		else
+			offscr.drawString("START!", SCREEN_WIDTH/2 - 50, SCREEN_HEIGHT/2);
 	}
 }
