@@ -38,7 +38,7 @@ public class Draw extends Applet implements KeyListener, Runnable
 	private Thread thread;
 	
 	//game data
-	private Tetris tetrisGame = new Tetris( 20, 10 );
+	private Tetris tetrisGame = new Tetris(20, 10);
 
 	private boolean gameBegun = false;
 	private int timeUntilStart = 3000;
@@ -60,10 +60,10 @@ public class Draw extends Applet implements KeyListener, Runnable
 		offscreenImage = createImage(width, height);
 		offscr = (Graphics2D) offscreenImage.getGraphics();
 		
-		loadImage();
+		loadImages();
 	}
 	
-	public void loadImage()
+	public void loadImages()
 	{
 		try
 		{
@@ -213,36 +213,22 @@ public class Draw extends Applet implements KeyListener, Runnable
 
 	public void keyReleased(KeyEvent arg0) { }
 	public void keyTyped(KeyEvent arg0) { }
-	
-	public Color getColorOfBlock( int r, int c )
-	{
-		Map board = tetrisGame.getBoard();
 		
-		if (board.isValid(r, c))
+	public Image getBlockImage(int blockType)
+	{
+		int imgId = 0;
+		switch (blockType)
 		{
-			if ( board.getTile(r, c) == 0 )
-				return Color.GRAY;
-			else
-			{
-				Block tempBlock = new Block(board.getTile(r, c));
-				return tempBlock.getColor();
-			}
+			case Block.BlockTypeI: imgId = IMGID_ORANGE; break;
+			case Block.BlockTypeO: imgId = IMGID_RED; break;
+			case Block.BlockTypeT: imgId = IMGID_YELLOW; break;
+			case Block.BlockTypeJ: imgId = IMGID_PURPLE; break;
+			case Block.BlockTypeL: imgId = IMGID_BLUE; break;
+			case Block.BlockTypeS: imgId = IMGID_CYAN; break;
+			case Block.BlockTypeZ: imgId = IMGID_GREEN; break;
+			default: imgId = IMGID_BG; break;
 		}
-		
-		return Color.BLACK;
-	}
-	
-	public Image getBlockImage(Color color)
-	{
-		if (color == Color.RED)							return img[IMGID_RED];
-		else if (color == Color.GREEN)					return img[IMGID_GREEN];
-		else if (color == Color.ORANGE)					return img[IMGID_ORANGE];
-		else if (color.equals(new Color(255, 0, 255)))	return img[IMGID_PURPLE];
-		else if (color == Color.YELLOW)					return img[IMGID_YELLOW];
-		else if (color == Color.CYAN)					return img[IMGID_CYAN];
-		else if (color == Color.BLUE)					return img[IMGID_BLUE];
-		
-		return img[IMGID_BG];
+		return img[imgId];
 	}
 	
 	public void drawBoard()
@@ -255,7 +241,7 @@ public class Draw extends Applet implements KeyListener, Runnable
 			for (int c = 0; c < board.getNumCols(); c++)
 			{
 				//draw tiles
-				Image tileImg = getBlockImage(getColorOfBlock(r, c));
+				Image tileImg = getBlockImage(board.getTile(r, c));
 				int x = c * TILE_WIDTH + LEFT_BOUND_X;
 				int y = r * TILE_HEIGHT;
 				offscr.drawImage(tileImg, x, y, TILE_WIDTH, TILE_HEIGHT, Color.WHITE, this);
@@ -283,7 +269,7 @@ public class Draw extends Applet implements KeyListener, Runnable
 		
 		for (Vector2D tile : currentBlock.getTileArray())
 		{
-			Image tileImg = getBlockImage(currentBlock.getColor());
+			Image tileImg = getBlockImage(currentBlock.getTypeOfBlock());
 			int x = (int)tile.getX() * TILE_WIDTH + LEFT_BOUND_X;
 			int y = (int)tile.getY() * TILE_HEIGHT;
 			offscr.drawImage(tileImg, x, y, TILE_WIDTH, TILE_HEIGHT, Color.WHITE, this);
@@ -293,14 +279,14 @@ public class Draw extends Applet implements KeyListener, Runnable
 	public void drawNextBlock()
 	{
 		// display Next Block data
-		offscr.setColor( Color.WHITE );
-		offscr.drawString( "Next Block: ", RIGHT_BOUND_X + 10, 120 );
+		offscr.setColor(Color.WHITE);
+		offscr.drawString("Next Block: ", RIGHT_BOUND_X + 10, 120);
 		for (Vector2D tile : tetrisGame.getNextBlock().getTileArray())
 		{
 			int c = (int) tile.getX();
 			int r = (int) tile.getY();
 			
-			Image tileImg = getBlockImage(tetrisGame.getNextBlock().getColor());
+			Image tileImg = getBlockImage(tetrisGame.getNextBlock().getTypeOfBlock());
 			int x = (c+13) * TILE_WIDTH;
 			int y = r * TILE_HEIGHT + 140;
 			offscr.drawImage(tileImg, x, y, TILE_WIDTH, TILE_HEIGHT , Color.WHITE, this);

@@ -1,11 +1,3 @@
-/*
- * ================================
- * Vector3D Class
- * ================================
- * 
- * Description:
- * Each vector in 3D space has x,y,z coordinates.
- */
 public class Vector2D 
 {
 	private double x;

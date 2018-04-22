@@ -1,19 +1,23 @@
-import java.awt.Color;
-
 public class Block
 {
+	public static final int BlockTypeI = 1;
+	public static final int BlockTypeO = 2;
+	public static final int BlockTypeT = 3;
+	public static final int BlockTypeJ = 4;
+	public static final int BlockTypeL = 5;
+	public static final int BlockTypeS = 6;
+	public static final int BlockTypeZ = 7;
+	
 	private int typeOfBlock;
-	private Color color;
 	private Vector2D [] tiles = new Vector2D [4]; //tile coordinates represented as (r, c) where r = y, c = x.
 
 	public int getTypeOfBlock() { return typeOfBlock; }
-	public Color getColor() { return color; }
 	public Vector2D getTile(int index) { return tiles[index]; }
 	public Vector2D [] getTileArray() { return tiles; }
 	
 	public void shiftTiles( int shiftR, int shiftC )
 	{
-		for ( Vector2D tile: tiles )
+		for (Vector2D tile: tiles)
 		{
 			tile.setX(tile.getX() + shiftC);
 			tile.setY(tile.getY() + shiftR);
@@ -22,7 +26,7 @@ public class Block
 	
 	public void rotateTiles( Vector2D center )
 	{
-		for ( Vector2D tile: tiles )
+		for (Vector2D tile: tiles)
 		{
 			//shift by center
 			int oldX = (int) (tile.getX() - center.getX());
@@ -58,56 +62,49 @@ public class Block
 
 		switch ( typeOfBlock )
 		{
-			case 1:
-				color = Color.ORANGE;
+			case BlockTypeI:
 				tiles[0] = new Vector2D(5, 0);
 				tiles[1] = new Vector2D(5, 1);
 				tiles[2] = new Vector2D(5, 2);
 				tiles[3] = new Vector2D(5, 3);
 				break;
 				
-			case 2:
-				color = Color.RED;
+			case BlockTypeO:
 				tiles[0] = new Vector2D(5, 0);
 				tiles[1] = new Vector2D(5, 1);
 				tiles[2] = new Vector2D(6, 0);
 				tiles[3] = new Vector2D(6, 1);
 				break;
 				
-			case 3:
-				color = Color.YELLOW;
+			case BlockTypeT:
 				tiles[0] = new Vector2D(5, 0);
 				tiles[1] = new Vector2D(5, 1);
 				tiles[2] = new Vector2D(4, 1);
 				tiles[3] = new Vector2D(6, 1);
 				break;
 				
-			case 4:
-				color = new Color(255, 0, 255);
+			case BlockTypeJ:
 				tiles[0] = new Vector2D(4, 0);
 				tiles[1] = new Vector2D(4, 1);
 				tiles[2] = new Vector2D(5, 1);
 				tiles[3] = new Vector2D(6, 1);
 				break;
 				
-			case 5:
-				color = Color.BLUE;
+			case BlockTypeL:
 				tiles[0] = new Vector2D(6, 0);
 				tiles[1] = new Vector2D(6, 1);
 				tiles[2] = new Vector2D(5, 1);
 				tiles[3] = new Vector2D(4, 1);
 				break;
 				
-			case 6:
-				color = Color.CYAN;
+			case BlockTypeS:
 				tiles[0] = new Vector2D(6, 0);
 				tiles[1] = new Vector2D(5, 0);
 				tiles[2] = new Vector2D(5, 1);
 				tiles[3] = new Vector2D(4, 1);
 				break;
 				
-			case 7:
-				color = Color.GREEN;
+			case BlockTypeZ:
 				tiles[0] = new Vector2D(4, 0);
 				tiles[1] = new Vector2D(5, 0);
 				tiles[2] = new Vector2D(5, 1);
