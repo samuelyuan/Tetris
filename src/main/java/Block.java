@@ -15,19 +15,15 @@ public class Block
 	public Vector2D getTile(int index) { return tiles[index]; }
 	public Vector2D [] getTileArray() { return tiles; }
 	
-	public void shiftTiles( int shiftR, int shiftC )
-	{
-		for (Vector2D tile: tiles)
-		{
+	public void shiftTiles(int shiftR, int shiftC) {
+		for (Vector2D tile: tiles) {
 			tile.setX(tile.getX() + shiftC);
 			tile.setY(tile.getY() + shiftR);
 		}
 	}
 	
-	public void rotateTiles( Vector2D center )
-	{
-		for (Vector2D tile: tiles)
-		{
+	public void rotateTiles(Vector2D center) {
+		for (Vector2D tile: tiles) {
 			//shift by center
 			int oldX = (int) (tile.getX() - center.getX());
 			int oldY = (int) (tile.getY() - center.getY());
@@ -54,14 +50,13 @@ public class Block
 	//7 - | |
 	//      | |
 	
-	public Block( int typeOfBlock )
-	{
+	public Block(int typeOfBlock) {
 		this.typeOfBlock = typeOfBlock;
-		for (int i = 0; i < tiles.length; i++)
+		for (int i = 0; i < tiles.length; i++) {
 			tiles[i] = new Vector2D(0, 0);
+		}
 
-		switch ( typeOfBlock )
-		{
+		switch (typeOfBlock) {
 			case BlockTypeI:
 				tiles[0] = new Vector2D(5, 0);
 				tiles[1] = new Vector2D(5, 1);
