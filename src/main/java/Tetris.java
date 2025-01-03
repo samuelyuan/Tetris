@@ -1,3 +1,5 @@
+import java.util.Arrays;
+
 public class Tetris {
 	private Map board;
 	private Block currentBlock, nextBlock;
@@ -129,17 +131,10 @@ public class Tetris {
 		}
 	}
 
-	public boolean canMoveDown() {
+	public boolean canBlockMoveDown(Block currentBlock) {
 		// check if the block can still move down
-		for (Vector2D tile : currentBlock.getTileArray()) {
-			int c = (int) tile.getX();
-			int r = (int) tile.getY();
-
-			if (!isOkToMove(r + 1, c)) {
-				return false;
-			}
-		}
-		return true;
+		return Arrays.stream(currentBlock.getTileArray())
+			.allMatch(tile -> isOkToMove((int) tile.getY() + 1, (int) tile.getX()));
 	}
 
 	public void updateBlocks() {
@@ -154,11 +149,11 @@ public class Tetris {
 			return;
 		}
 
-		isMoving = canMoveDown();
+		isMoving = canBlockMoveDown(currentBlock);
 		if (isMoving) {
 			currentBlock.shiftTiles(1, 0); // move down
 		} else {
-			if (placeNewBlock(currentBlock) == false) {
+			if (!placeNewBlock(currentBlock)) {
 				isGameOver = true;
 			}
 

@@ -12,12 +12,3 @@ Controls
 * `up`: Rotate the block
 * `down`:  Slow drop
 * `p`: Pause the game
-
-Layout
----
-    .
-    ├── img                     # Game data
-    ├── screenshots             
-    ├── src                     # Source files
-    ├── LICENSE
-    └── README.md

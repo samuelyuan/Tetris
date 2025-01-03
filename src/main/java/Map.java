@@ -1,3 +1,5 @@
+import java.util.Arrays;
+
 public class Map {
 	private int[][] map;
 	private int numRows, numCols;
@@ -33,34 +35,19 @@ public class Map {
 	}
 
 	public boolean isValid(int r, int c) {
-		if (r < 0 || c < 0 || r >= numRows || c >= numCols) {
-			return false;
-		} else {
-			return true;
-		}
+		return r >= 0 && c >= 0 && r < numRows && c < numCols;
 	}
 
 	public void clear() {
-		for (int r = 0; r < numRows; r++) {
-			clearRow(r);
-		}
+		Arrays.stream(map).forEach(row -> Arrays.fill(row, 0));
 	}
 
 	public void clearRow(int rowNum) {
-		for (int c = 0; c < numCols; c++) {
-			map[rowNum][c] = 0;
-		}
+		Arrays.fill(map[rowNum], 0);
 	}
 
 	public boolean isLineFilled(int rowNum) {
-		for (int c = 0; c < getNumCols(); c++) {
-			// line isn't filled, since there's an empty space
-			if (getTile(rowNum, c) == 0) {
-				return false;
-			}
-		}
-
-		return true;
+		return Arrays.stream(map[rowNum]).allMatch(tile -> tile != 0);
 	}
 
 	public void shiftRowDown(int rowNum) {
@@ -70,5 +57,7 @@ public class Map {
 				setTile(startingY + 1, x, getTile(startingY, x));
 			}
 		}
+		// clear the top row after shifting
+		clearRow(0);
 	}
 }

@@ -61,5 +61,53 @@ public class TetrisTest {
 		assertEquals(board.getTile(1, 1), 0);
 		assertEquals(board.getTile(1, 2), 0);
 		assertEquals(board.getTile(1, 3), 0);
+
+		// third row should be empty
+		for (int i = 0; i < board.getNumCols(); i++) {
+			assertEquals(board.getTile(0, i), 0);
+		}
+	}
+
+	@Test
+	public void testClearRow() {
+		Map board = new Map(3, 4);
+
+		// fill up the first row
+		for (int i = 0; i < board.getNumCols(); i++) {
+			board.setTile(2, i, 1);
+		}
+
+		// clear the first row
+		board.clearRow(2);
+
+		// first row should be empty
+		for (int i = 0; i < board.getNumCols(); i++) {
+			assertEquals(board.getTile(2, i), 0);
+		}
+	}
+
+	@Test
+	public void testPlaceNewBlock() {
+		Tetris game = new Tetris(10, 10);
+		Block currentBlock = new Block(2);
+
+		currentBlock.shiftTiles(1, 0);
+		currentBlock.shiftTiles(1, 0);
+
+		// new block can be placed because there's still room at the top
+		boolean result = game.placeNewBlock(currentBlock);
+		assertTrue(result);
+	}
+
+	@Test
+	public void testCanMoveDown() {
+		Tetris game = new Tetris(10, 10);
+		Block currentBlock = new Block(2);
+
+		currentBlock.shiftTiles(1, 0);
+		currentBlock.shiftTiles(1, 0);
+
+		// block should be able to move down
+		assertTrue(game.canBlockMoveDown(currentBlock));
 	}
 }
