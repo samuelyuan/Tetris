@@ -8,7 +8,7 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
-public class Draw extends Application implements Runnable {
+public class Main extends Application implements Runnable {
     public static final int SCREEN_WIDTH = 600;
     public static final int SCREEN_HEIGHT = 500;
     public static final int TILE_WIDTH = 25;

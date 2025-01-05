@@ -12,3 +12,18 @@ Controls
 * `up`: Rotate the block
 * `down`:  Slow drop
 * `p`: Pause the game
+
+Getting Started
+---
+
+1. Clone the project
+
+2. Compile project
+```
+gradle build
+```
+
+3. Run project
+```
+gradle run
+```

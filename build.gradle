@@ -41,7 +41,7 @@ javafx {
 }
 
 application {
-    mainClass = 'Draw'
+    mainClass = 'Main'
 }
 
 test {
