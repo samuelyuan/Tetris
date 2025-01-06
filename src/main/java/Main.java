@@ -7,8 +7,12 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
+import javafx.animation.Animation;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
+import javafx.util.Duration;
 
-public class Main extends Application implements Runnable {
+public class Main extends Application {
     public static final int SCREEN_WIDTH = 600;
     public static final int SCREEN_HEIGHT = 500;
     public static final int TILE_WIDTH = 25;
@@ -31,7 +35,6 @@ public class Main extends Application implements Runnable {
     private boolean gameBegun = false;
     private int timeUntilStart = 3000;
     private boolean gamePaused = false;
-    private Thread thread;
 
     public static void main(String[] args) {
         launch(args);
@@ -49,31 +52,28 @@ public class Main extends Application implements Runnable {
         primaryStage.setTitle("JavaFX Tetris");
         primaryStage.show();
 
-        thread = new Thread(() -> {
-            while (timeUntilStart >= 0) {
-                draw(gc);
-                try {
-                    Thread.sleep(1000);
-                    timeUntilStart -= 1000;
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
+        Timeline gameStartTimeline = new Timeline(new KeyFrame(Duration.seconds(1), event -> {
+            draw(gc);
+            timeUntilStart -= 1000;
+        }));
+        gameStartTimeline.setCycleCount(3);
+        gameStartTimeline.setOnFinished(event -> {
             gameBegun = true;
-
-            while (true) {
-                if (!gamePaused) {
-                    tetrisGame.mainLoop();
-                }
-                draw(gc);
-                try {
-                    Thread.sleep(tetrisGame.getTimeUntilNextUpdate());
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
+            startGameLoop(gc);
         });
-        thread.start();
+        gameStartTimeline.play();
+    }
+
+    private void startGameLoop(GraphicsContext gc) {
+        Timeline gameLoopTimeline = new Timeline(
+                new KeyFrame(Duration.millis(tetrisGame.getTimeUntilNextUpdate()), event -> {
+                    if (!gamePaused) {
+                        tetrisGame.mainLoop();
+                    }
+                    draw(gc);
+                }));
+        gameLoopTimeline.setCycleCount(Animation.INDEFINITE);
+        gameLoopTimeline.play();
     }
 
     private void loadImages() {
@@ -231,11 +231,5 @@ public class Main extends Application implements Runnable {
         if (event.getCode() == KeyCode.P && gameBegun) {
             gamePaused = !gamePaused;
         }
-    }
-
-    @Override
-    public void run() {
-        // This method is not used in JavaFX as the game loop is handled in the start
-        // method.
     }
 }
