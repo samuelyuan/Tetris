@@ -59,12 +59,12 @@ public class Main extends Application {
         gameStartTimeline.setCycleCount(3);
         gameStartTimeline.setOnFinished(event -> {
             gameBegun = true;
-            startGameLoop(gc);
+            startGameLoop(gc, primaryStage);
         });
         gameStartTimeline.play();
     }
 
-    private void startGameLoop(GraphicsContext gc) {
+    private void startGameLoop(GraphicsContext gc, Stage primaryStage) {
         Timeline gameLoopTimeline = new Timeline(
                 new KeyFrame(Duration.millis(tetrisGame.getTimeUntilNextUpdate()), event -> {
                     if (!gamePaused) {
@@ -74,6 +74,8 @@ public class Main extends Application {
                 }));
         gameLoopTimeline.setCycleCount(Animation.INDEFINITE);
         gameLoopTimeline.play();
+
+        primaryStage.setOnCloseRequest(event -> gameLoopTimeline.stop());
     }
 
     private void loadImages() {
