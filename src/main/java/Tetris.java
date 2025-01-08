@@ -59,6 +59,19 @@ public class Tetris {
 		nextBlock = createNewBlock();
 	}
 
+	public void resetGame() {
+		board.clear();
+		currentBlock = null;
+		nextBlock = createNewBlock();
+		isInit = false;
+		isMoving = true;
+		isGameOver = false;
+		score = 0;
+		linesCleared = 0;
+		numLevels = 1;
+		timeUntilNextUpdate = 400;
+	}
+
 	public Block createNewBlock() {
 		int randNum = (int) (Math.random() * Tetris.NUM_BLOCKS) + 1;
 		return new Block(randNum);

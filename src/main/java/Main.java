@@ -49,28 +49,28 @@ public class Main extends Application {
         Scene scene = new Scene(new StackPane(canvas));
         scene.setOnKeyPressed(this::handleKeyPress);
         primaryStage.setScene(scene);
-        primaryStage.setTitle("JavaFX Tetris");
+        primaryStage.setTitle("Tetris");
         primaryStage.show();
 
         Timeline gameStartTimeline = new Timeline(new KeyFrame(Duration.seconds(1), event -> {
-            draw(gc);
+            draw(gc, scene);
             timeUntilStart -= 1000;
         }));
         gameStartTimeline.setCycleCount(3);
         gameStartTimeline.setOnFinished(event -> {
             gameBegun = true;
-            startGameLoop(gc, primaryStage);
+            startGameLoop(gc, primaryStage, scene);
         });
         gameStartTimeline.play();
     }
 
-    private void startGameLoop(GraphicsContext gc, Stage primaryStage) {
+    private void startGameLoop(GraphicsContext gc, Stage primaryStage, Scene scene) {
         Timeline gameLoopTimeline = new Timeline(
                 new KeyFrame(Duration.millis(tetrisGame.getTimeUntilNextUpdate()), event -> {
                     if (!gamePaused) {
                         tetrisGame.mainLoop();
                     }
-                    draw(gc);
+                    draw(gc, scene);
                 }));
         gameLoopTimeline.setCycleCount(Animation.INDEFINITE);
         gameLoopTimeline.play();
@@ -93,7 +93,7 @@ public class Main extends Application {
         }
     }
 
-    private void draw(GraphicsContext gc) {
+    private void draw(GraphicsContext gc, Scene scene) {
         clearScreen(gc, javafx.scene.paint.Color.GRAY);
 
         drawBoard(gc);
@@ -110,6 +110,7 @@ public class Main extends Application {
         if (tetrisGame.getIsGameOver()) {
             gc.setFill(javafx.scene.paint.Color.WHITE);
             gc.fillText("GAME OVER!", SCREEN_WIDTH / 2 - 25, SCREEN_HEIGHT / 2);
+            gc.fillText("Press SPACE to restart", SCREEN_WIDTH / 2 - 50, SCREEN_HEIGHT / 2 + 20);
         }
 
         if (gamePaused) {
@@ -215,6 +216,12 @@ public class Main extends Application {
     }
 
     private void handleKeyPress(KeyEvent event) {
+        if (tetrisGame.getIsGameOver()) {
+            if (event.getCode() == KeyCode.SPACE) {
+                tetrisGame.resetGame();
+            }
+        }
+
         if (gamePaused == false) {
             if (!tetrisGame.getIsMoving())
                 return;
